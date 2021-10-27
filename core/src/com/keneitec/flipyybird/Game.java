@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Random;
+
 public class Game extends ApplicationAdapter {
 	//Texturas
 	private SpriteBatch batch;
@@ -20,7 +22,9 @@ public class Game extends ApplicationAdapter {
 	private float gravidade = 0;
 	private float posicaoInicialY = 0;
 	private float posicaoCanoHorizontal;
+	private float posicaoCanoVertical;
 	private float espacoEntreCanos;
+	private Random random;
 
 	@Override
 	public void create () {
@@ -35,6 +39,14 @@ public class Game extends ApplicationAdapter {
 		desenharTexturas();
 	}
 	private void verificaEstadoJogo(){
+
+		//Movimentar o cano
+		posicaoCanoHorizontal -= Gdx.graphics.getDeltaTime() * 350;
+		if (posicaoCanoHorizontal < - canoTopo.getWidth()){
+			posicaoCanoHorizontal = larguraDispositivo + canoTopo.getWidth();
+			posicaoCanoVertical = random.nextInt(400) - 200;
+		}
+
 		//Aplica evento de clique na tela
 		boolean toqueTela = Gdx.input.justTouched();
 		if (toqueTela){
@@ -57,8 +69,8 @@ public class Game extends ApplicationAdapter {
 		batch.draw(fundo,0,0, larguraDispositivo ,alturaDispositivo);
 		batch.draw(passaros[(int) variacao],movimentoX,posicaoInicialY);
 
-		batch.draw(canoBaixo,posicaoCanoHorizontal-100,alturaDispositivo/2 - canoBaixo.getHeight() - espacoEntreCanos/2);
-		batch.draw(canoTopo,posicaoCanoHorizontal-100,alturaDispositivo/2 + espacoEntreCanos/2);
+		batch.draw(canoBaixo,posicaoCanoHorizontal-100,alturaDispositivo/2 - canoBaixo.getHeight() - espacoEntreCanos/2 + posicaoCanoVertical);
+		batch.draw(canoTopo,posicaoCanoHorizontal-100,alturaDispositivo/2 + espacoEntreCanos/2 + posicaoCanoVertical);
 
 		batch.end();
 	}
@@ -77,11 +89,13 @@ public class Game extends ApplicationAdapter {
 
 	private void inicializarObjetos(){
 		batch = new SpriteBatch();
+		random = new Random();
+
 		larguraDispositivo = Gdx.graphics.getWidth();
 		alturaDispositivo = Gdx.graphics.getHeight();
 		posicaoInicialY = alturaDispositivo/2;
 		posicaoCanoHorizontal = larguraDispositivo;
-		espacoEntreCanos = 200;
+		espacoEntreCanos = 230;
 	}
 	
 	@Override
