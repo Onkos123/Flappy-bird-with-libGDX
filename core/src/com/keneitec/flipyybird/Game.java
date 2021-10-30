@@ -2,7 +2,9 @@ package com.keneitec.flipyybird;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Random;
@@ -25,6 +27,11 @@ public class Game extends ApplicationAdapter {
 	private float posicaoCanoVertical;
 	private float espacoEntreCanos;
 	private Random random;
+	private int pontos;
+	private boolean passouCano;
+
+	//Exibição de textos
+	BitmapFont textoPontuacao;
 
 	@Override
 	public void create () {
@@ -36,8 +43,10 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void render () {
 		verificaEstadoJogo();
+		validarPontos();
 		desenharTexturas();
 	}
+
 	private void verificaEstadoJogo(){
 
 		//Movimentar o cano
@@ -45,6 +54,7 @@ public class Game extends ApplicationAdapter {
 		if (posicaoCanoHorizontal < - canoTopo.getWidth()){
 			posicaoCanoHorizontal = larguraDispositivo + canoTopo.getWidth();
 			posicaoCanoVertical = random.nextInt(400) - 200;
+			passouCano = false;
 		}
 
 		//Aplica evento de clique na tela
@@ -67,10 +77,12 @@ public class Game extends ApplicationAdapter {
 		batch.begin();
 
 		batch.draw(fundo,0,0, larguraDispositivo ,alturaDispositivo);
-		batch.draw(passaros[(int) variacao],movimentoX,posicaoInicialY);
+		batch.draw(passaros[(int) variacao],50,posicaoInicialY);
 
 		batch.draw(canoBaixo,posicaoCanoHorizontal-100,alturaDispositivo/2 - canoBaixo.getHeight() - espacoEntreCanos/2 + posicaoCanoVertical);
 		batch.draw(canoTopo,posicaoCanoHorizontal-100,alturaDispositivo/2 + espacoEntreCanos/2 + posicaoCanoVertical);
+
+		textoPontuacao.draw(batch,String.valueOf(pontos),larguraDispositivo/2,alturaDispositivo -100);
 
 		batch.end();
 	}
@@ -87,6 +99,15 @@ public class Game extends ApplicationAdapter {
 		canoTopo = new Texture("cano_topo_maior.png");
 	}
 
+	private void validarPontos() {
+		if (posicaoCanoHorizontal < 50 - passaros[0].getWidth()){//Passou da posição do passaro
+			if (!passouCano){
+				pontos++;
+				passouCano = true;
+			}
+		}
+	}
+
 	private void inicializarObjetos(){
 		batch = new SpriteBatch();
 		random = new Random();
@@ -96,6 +117,11 @@ public class Game extends ApplicationAdapter {
 		posicaoInicialY = alturaDispositivo/2;
 		posicaoCanoHorizontal = larguraDispositivo;
 		espacoEntreCanos = 230;
+
+		//Configuração dos textos
+		textoPontuacao = new BitmapFont();
+		textoPontuacao.setColor(Color.WHITE);
+		textoPontuacao.getData().setScale(10);
 	}
 	
 	@Override
