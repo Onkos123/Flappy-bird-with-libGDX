@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
 
@@ -14,6 +18,12 @@ public class Game extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Texture passaros[],fundo;
 	private Texture canoBaixo, canoTopo;
+
+	//Formas para colisoes
+	private ShapeRenderer shapeRenderer;
+	private Circle circuloPassaro;
+	private Rectangle retanguloCanoCima;
+	private Rectangle retanguloCanoBaixo;
 
 
 	//Atributos de configuracao
@@ -45,6 +55,35 @@ public class Game extends ApplicationAdapter {
 		verificaEstadoJogo();
 		validarPontos();
 		desenharTexturas();
+		detectarColisoes();
+	}
+
+	private void detectarColisoes() {
+		circuloPassaro.set(
+				50+passaros[0].getWidth()/2,posicaoCanoVertical+passaros[0].getHeight()/2,passaros[0].getWidth()/2
+		);
+		retanguloCanoBaixo.set(
+				posicaoCanoHorizontal-100,alturaDispositivo/2 - canoBaixo.getHeight() - espacoEntreCanos/2 + posicaoCanoVertical,
+				canoBaixo.getWidth(),canoBaixo.getHeight()
+		);
+		retanguloCanoCima.set(
+				posicaoCanoHorizontal-100,alturaDispositivo/2 + espacoEntreCanos/2 + posicaoCanoVertical,
+				canoTopo.getWidth(),canoTopo.getHeight()
+		);
+
+		boolean colidiuCanoCima = Intersector.overlaps(circuloPassaro,retanguloCanoCima);
+		boolean colidiuCanoBaixo = Intersector.overlaps(circuloPassaro,retanguloCanoBaixo);
+
+		if (colidiuCanoCima || colidiuCanoBaixo){
+
+		}
+
+		/*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+		shapeRenderer.circle(50+passaros[0].getWidth()/2,posicaoCanoVertical+passaros[0].getHeight()/2,passaros[0].getWidth()/2);
+
+		shapeRenderer.end();*/
+
 	}
 
 	private void verificaEstadoJogo(){
@@ -122,6 +161,12 @@ public class Game extends ApplicationAdapter {
 		textoPontuacao = new BitmapFont();
 		textoPontuacao.setColor(Color.WHITE);
 		textoPontuacao.getData().setScale(10);
+
+		//Formas geometricas para colisoes
+		shapeRenderer = new ShapeRenderer();
+		circuloPassaro = new Circle();
+		retanguloCanoCima = new Rectangle();
+		retanguloCanoBaixo = new Rectangle();
 	}
 	
 	@Override
